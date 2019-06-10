@@ -73,8 +73,9 @@ $(document).ready(function() {
         let currentLabelText = value.textContent;
         if (clickedLabelDate != null) {
           if ((currentLabelText !== clickedLabel) && (currentLabelText.indexOf(clickedLabelDate[1]) != -1)) {
-              let currentValue = $(value).children();
+              let currentValue = $(value).find('input')[0];
               console.log(currentValue);
+              currentValue.attr('disabled');
           }
         }
       });

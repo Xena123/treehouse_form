@@ -74,13 +74,17 @@ $(document).ready(function() {
         let currentLabelText = value.textContent;
         let currentValue = $(value).find('input')[0];
 
+        // if the input is checked
         if ((target).is(":checked")) {
+          // and there is a date ie. the first one does not have a date so variable is null
           if (clickedLabelDate != null) {
+            // loop through the labels and check if the date matches any of the other labels
             if ((currentLabelText !== clickedLabel) && (currentLabelText.indexOf(clickedLabelDate[1]) != -1)) {  
               $(currentValue).prop("disabled", true);
               $(value).css('color', 'grey');
             }
           }
+        // else enable all the checkboxes and reset the color property
         } else {
           $(currentValue).prop("disabled", false);
           $(value).css('color', '');
@@ -89,5 +93,6 @@ $(document).ready(function() {
     }
   });
 
+  
 
 });

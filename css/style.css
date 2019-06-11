@@ -135,6 +135,10 @@ button:hover {
 	margin-top: 1.25em;
 }
 
+.invalid {
+	border: 1px solid red !important;
+}
+
 /* ================================= 
   Helper Classes
 ==================================== */

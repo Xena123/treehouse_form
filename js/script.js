@@ -1,7 +1,6 @@
 $(document).ready(function() {
   // Add focus to name input on page load
   $("#name").focus();
-
   const otherTextInput = $('#other-title');
 
   // Hide the other text input to begin with
@@ -143,10 +142,54 @@ $(document).ready(function() {
     });
   });
 
-  $('#submit').click((event) => {
-    event.preventDefault();
-    console.log('submit');
+  const invalidEmailMsg = $('<span class="invalidEmailMsg">Please enter a valid email address</span>');
+  // DYNAMIC FORM VALIDATION
+  $('#mail').keyup((event) => {
+    let inputValue = $(event.target).val();
+    $('.invalidEmailMsg').remove();
+    $('#mail').removeClass('invalid');
 
+
+    if (inputValue.length != 0) {
+      if (isValidEmailAddress(inputValue)) {
+        console.log('valid email');
+      } else {
+        $('label[for="mail"]').after(invalidEmailMsg);
+        $('#mail').addClass('invalid');
+      }
+    }
   });
 
+  // FORM VALIDATION ON SUBMIT
+  $('#submit').click((event) => {
+    //event.preventDefault();
+
+    const emailAddress = $('#mail').val();
+    const name = $('#name').val();
+    $('.invalidEmailMsg').remove();
+    $('.error').remove();
+    $('input').removeClass('invalid');
+
+    if (!(isValidEmailAddress(emailAddress))) {
+      $('label[for="mail"]').after(invalidEmailMsg);
+      $('#mail').addClass('invalid');
+      $("html, body").animate({ scrollTop: 0 }, "slow");
+      return false; 
+    }
+    if (name.length < 1) {
+     $('label[for="name"]').after('<span class="error">This field is required</span>');
+     $('#name').addClass('invalid');
+     $("html, body").animate({ scrollTop: 0 }, "slow");
+     return false;
+    }
+    return true;
+  });
+
+
+  
 });
+
+const isValidEmailAddress = (emailAddress) => {
+  const pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+  return pattern.test(emailAddress);
+}

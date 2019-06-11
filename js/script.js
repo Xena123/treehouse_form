@@ -62,13 +62,16 @@ $(document).ready(function() {
   $('.activities').change(function(event) {
     let target = $(event.target);
     const activityLabels = document.querySelectorAll('.activities label');
+    let clickedLabel = target.parent().text();
+    // find the text between the '–' and the ',' of the clicked label 
+    let clickedLabelDate = clickedLabel.match(" — (.*), ");
+    // find the number after the dollar sign of the clicked label
+    const clickedLabelAmt = clickedLabel.match(/\$(\d+)/);
+    let amount = parseInt(clickedLabelAmt[1]);
+    
+
     // and if the element clicked is an input
     if (target.is('input')) {
-
-      let clickedLabel = target.parent().text();
-      // find the text between the – and the , and store it in a variable
-      let clickedLabelDate = clickedLabel.match(" — (.*), ");
-      
       // check to see if the text of the clicked input matches any of the other labels text
       $(activityLabels).each(function (index, value) {
         let currentLabelText = value.textContent;
@@ -82,6 +85,7 @@ $(document).ready(function() {
             if ((currentLabelText !== clickedLabel) && (currentLabelText.indexOf(clickedLabelDate[1]) != -1)) {  
               $(currentValue).prop("disabled", true);
               $(value).css('color', 'grey');
+
             }
           }
         // else enable all the checkboxes and reset the color property
@@ -90,9 +94,18 @@ $(document).ready(function() {
           $(value).css('color', '');
         }
       });
-    }
-  });
 
-  
+      if ((target).is(":checked")) {
+        let runningTotal = 0;
+        runningTotal = runningTotal + amount;
+        const costElement = `<p>$${runningTotal}</p>`;
+        console.log(runningTotal);
+        $('.activities').append(costElement);
+      }
+    }
+
+    
+
+  });
 
 });

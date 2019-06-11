@@ -64,6 +64,7 @@ $(document).ready(function() {
     const activityLabels = document.querySelectorAll('.activities label');
     // and if the element clicked is an input
     if (target.is('input')) {
+
       let clickedLabel = target.parent().text();
       // find the text between the – and the , and store it in a variable
       let clickedLabelDate = clickedLabel.match(" — (.*), ");
@@ -71,12 +72,18 @@ $(document).ready(function() {
       // check to see if the text of the clicked input matches any of the other labels text
       $(activityLabels).each(function (index, value) {
         let currentLabelText = value.textContent;
-        if (clickedLabelDate != null) {
-          if ((currentLabelText !== clickedLabel) && (currentLabelText.indexOf(clickedLabelDate[1]) != -1)) {
-              let currentValue = $(value).find('input')[0];
-              $(currentValue).attr('disabled', true);
+        let currentValue = $(value).find('input')[0];
+
+        if ((target).is(":checked")) {
+          if (clickedLabelDate != null) {
+            if ((currentLabelText !== clickedLabel) && (currentLabelText.indexOf(clickedLabelDate[1]) != -1)) {  
+              $(currentValue).prop("disabled", true);
               $(value).css('color', 'grey');
+            }
           }
+        } else {
+          $(currentValue).prop("disabled", false);
+          $(value).css('color', '');
         }
       });
     }

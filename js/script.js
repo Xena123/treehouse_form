@@ -142,8 +142,9 @@ $(document).ready(function() {
     });
   });
 
-  const invalidEmailMsg = $('<span class="invalidEmailMsg">Please enter a valid email address</span>');
   // DYNAMIC FORM VALIDATION
+  const invalidEmailMsg = $('<span class="invalidEmailMsg">Please enter a valid email address</span>');
+  
   $('#mail').keyup((event) => {
     let inputValue = $(event.target).val();
     $('.invalidEmailMsg').remove();
@@ -162,7 +163,7 @@ $(document).ready(function() {
 
   // FORM VALIDATION ON SUBMIT
   $('#submit').click((event) => {
-    //event.preventDefault();
+    event.preventDefault();
 
     const emailAddress = $('#mail').val();
     const name = $('#name').val();
@@ -174,15 +175,15 @@ $(document).ready(function() {
       $('label[for="mail"]').after(invalidEmailMsg);
       $('#mail').addClass('invalid');
       $("html, body").animate({ scrollTop: 0 }, "slow");
-      return false; 
+      
     }
     if (name.length < 1) {
      $('label[for="name"]').after('<span class="error">This field is required</span>');
      $('#name').addClass('invalid');
      $("html, body").animate({ scrollTop: 0 }, "slow");
-     return false;
+     
     }
-    return true;
+    
   });
 
 

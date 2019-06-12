@@ -9,13 +9,13 @@
 body,
 input,
 button {
- font-family: 'Roboto', sans-serif;
+ font-family: 'Poppins', sans-serif;
 }
 
 body {
   font: 1em/1.5;
   color: #184f68;
-	background: #accbd9;
+	/*background: #accbd9;*/
 }
 
 header {
@@ -76,12 +76,17 @@ label {
 	margin-bottom: .5em;
 }
 
+select {
+	/*-webkit-appearance: none;*/
+	-webkit-border-radius: 0px;
+}
+
 input,
 select {
 	margin-bottom: 1.125em;	
 }
 
-input {
+input, select {
 	font-size: 1em;
 	font-weight: 500;
 	padding: .8em;
@@ -135,8 +140,18 @@ button:hover {
 	margin-top: 1.25em;
 }
 
+.total {
+	color: #000;
+	font-size: 20px;
+}
+
 .invalid {
 	border: 1px solid red !important;
+}
+
+.error {
+	font-size: 10px;
+	color: red;
 }
 
 /* ================================= 

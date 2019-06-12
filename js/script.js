@@ -2,16 +2,20 @@ $(document).ready(function() {
   // Add focus to name input on page load
   $("#name").focus();
   const otherTextInput = $('#other-title');
+  const colorDropdown = $('#colors-js-puns');
 
   // Hide the other text input to begin with
   otherTextInput.hide();
+  // Hide the other color dropdown to begin with
+  colorDropdown.hide();
 
   // *** OTHER JOB ROLE FUNCTIONALITY
   // If the "other" option is selected then show the "other" text input
   // Else hide it
-  $('#title').change(() => {
-    $(this).find("option:selected").each(() => {
+  $('#title').change(function() {
+    $(this).find("option:selected").each(function() {
       const optionValue = $(this).attr("value");
+      console.log(optionValue);
       if (optionValue === 'other') {
         otherTextInput.show();
       } else {
@@ -29,10 +33,18 @@ $(document).ready(function() {
       const designOptionValue = $(this).attr('value');
       const colorOptions = $('#color option');
 
+      // only show the color dropdown if the either of the color options are picked
+      if ((designOptionValue === 'js puns') || (designOptionValue === 'heart js')) {
+        colorDropdown.show();
+      // otherwise hide it again
+      } else {
+        colorDropdown.hide();
+      }
+
       // if the value of the option selected equals 'js puns'
       if (designOptionValue === 'js puns') {
         // then loop through all the option elements
-        $(colorOptions).each((index, value) => {
+        $(colorOptions).each((index) => {
           let currentOptionText = ($(colorOptions[index]).text());
           // first hide all the option elements
           $(colorOptions[index]).hide();
@@ -43,7 +55,7 @@ $(document).ready(function() {
         });
         // the same for 'heart js'
       } else if (designOptionValue === 'heart js') {
-        $(colorOptions).each((index, value) => {
+        $(colorOptions).each((index) => {
           let currentOptionText = ($(colorOptions[index]).text());
           $(colorOptions[index]).hide();
           if (currentOptionText.indexOf('I') >= 0) {
@@ -52,7 +64,7 @@ $(document).ready(function() {
         });
         // else reset and show all the options
       } else {
-        $(colorOptions).each((index, value) => {
+        $(colorOptions).each((index) => {
           $(colorOptions[index]).show();
         }); 
       }
@@ -101,7 +113,7 @@ $(document).ready(function() {
 
       if ((target).is(":checked")) {
         runningTotal = runningTotal + amount;
-        const costElement = `<p class="total">$${runningTotal}</p>`;
+        const costElement = `<p class="total">Total: $${runningTotal}</p>`;
         if ($('.total')) {
           $('.total').remove();
         }
@@ -118,7 +130,7 @@ $(document).ready(function() {
   paypalInfo.hide();
   bitcoinInfo.hide();
   // make sure you cannot select the first option of the payment method
-  $("#payment option[value=select_method]").attr('disabled', true);
+  $('#payment option[value=select_method]').attr('disabled', true);
 
   // when an option from the payment dropdown menu is selected
   $('#payment').change(() => {
@@ -143,13 +155,12 @@ $(document).ready(function() {
   });
 
   // DYNAMIC FORM VALIDATION
-  const invalidEmailMsg = $('<span class="invalidEmailMsg">Please enter a valid email address</span>');
+  const invalidEmailMsg = $('<span class="error error--email">Please enter a valid email address</span>');
   
   $('#mail').keyup((event) => {
     let inputValue = $(event.target).val();
-    $('.invalidEmailMsg').remove();
+    $('.error--email').remove();
     $('#mail').removeClass('invalid');
-
 
     if (inputValue.length != 0) {
       if (isValidEmailAddress(inputValue)) {
@@ -165,25 +176,63 @@ $(document).ready(function() {
   $('#submit').click((event) => {
     const emailAddress = $('#mail').val();
     const name = $('#name').val();
+    const actCheckboxes = $('.activities input:checked').length;
+    const selectedPayment = $('#payment option:selected').text();
+    const cvvRegex = /^[0-9]{3}$/;
+    const ccRegex = /^[0-9]{14,16}$/;
+    const zipRegex = /^[0-9]{5}$/;
+    const cvvVal = $('#credit-card #cvv').val();
+    const cardVal = $('#credit-card #cc-num').val();
+    const zipVal = $('#credit-card #zip').val();
+
     $('.invalidEmailMsg').remove();
     $('.error').remove();
     $('input').removeClass('invalid');
 
+    // if email address is invalid
     if (!(isValidEmailAddress(emailAddress))) {
       event.preventDefault();
       $('label[for="mail"]').after(invalidEmailMsg);
       $('#mail').addClass('invalid');
       $("html, body").animate({ scrollTop: 0 }, "slow");
-      
     }
+
+    // if name input is empty
     if (name.length < 1) {
       event.preventDefault();
-      $('label[for="name"]').after('<span class="error">This field is required</span>');
+      $('label[for="name"]').after('<span class="error error--name">This field is required</span>');
       $('#name').addClass('invalid');
-      $("html, body").animate({ scrollTop: 0 }, "slow");
-     
+      $("html, body").animate({ scrollTop: 0 }, "slow"); 
     }
     
+    // if none of the checkboxes in the activities section are checked
+    if (actCheckboxes === 0) {
+      event.preventDefault();
+      $('.activities legend').after('<span class="error error--activities">Please check at least one box</span>');
+    }
+    
+    // if credit card payment option is selected
+    if (selectedPayment === 'Credit Card') {
+      // if the cvv number is not 3 digits long
+      if ((cvvRegex.exec(cvvVal)) === null) {
+        event.preventDefault();
+        $('#cvv').addClass('invalid');
+        $('label[for="cvv"]').after('<span class="error error--cvv">Invalid CVV</span>');
+      }
+      // if the credit card number is not between 13 and 16 digits long
+      if ((ccRegex.exec(cardVal)) === null) {
+        event.preventDefault();
+        $('label[for="cc-num"]').after('<span class="error error--cc">Please enter a number between 13 and 16 digits long</span>');
+        $('#cc-num').addClass('invalid');
+      }
+      // if the zip code number is not 5 digits long
+      if ((zipRegex.exec(zipVal)) === null) {
+        event.preventDefault();
+        $('#zip').addClass('invalid');
+        $('label[for="zip"]').after('<span class="error error--zip">Invalid Zip Code</span>');
+      }
+    }
+
   });
 
 

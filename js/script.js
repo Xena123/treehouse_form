@@ -1,3 +1,22 @@
+
+const isValidEmailAddress = (emailAddress) => {
+  const pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+  return pattern.test(emailAddress);
+}
+
+const hideAndShow = (varShow, varHide1, varHide2) => {
+  varShow.show();
+  varHide1.hide();
+  varHide2.hide();
+}
+
+const invalidFormField = (varToAdErrorMsg, errorMsg, varToAddClass) => {
+  event.preventDefault();
+  $(varToAdErrorMsg).after(errorMsg);
+  $(varToAddClass).addClass('invalid');
+}
+
+
 $(document).ready(function() {
   // Add focus to name input on page load
   $("#name").focus();
@@ -8,6 +27,8 @@ $(document).ready(function() {
   otherTextInput.hide();
   // Hide the other color dropdown to begin with
   colorDropdown.hide();
+  // Select credit card option by default
+  $('#payment option[value="credit card"]').attr("selected", true);
 
   // *** OTHER JOB ROLE FUNCTIONALITY
   // If the "other" option is selected then show the "other" text input
@@ -71,7 +92,6 @@ $(document).ready(function() {
     });
   });
 
-
   // *** ACTIVITIES SECTION FUNCTIONALITY
   let runningTotal = 0;
   // when the fieldset with the class '.activites' is clicked or changed
@@ -85,6 +105,10 @@ $(document).ready(function() {
     const clickedLabelAmt = clickedLabel.match(/\$(\d+)/);
     let amount = parseInt(clickedLabelAmt[1]);
     
+
+    if ($('.total')) {
+      $('.total').remove();
+    }
 
     // and if the element clicked is an input
     if (target.is('input')) {
@@ -113,10 +137,11 @@ $(document).ready(function() {
 
       if ((target).is(":checked")) {
         runningTotal = runningTotal + amount;
-        const costElement = `<p class="total">Total: $${runningTotal}</p>`;
-        if ($('.total')) {
-          $('.total').remove();
-        }
+        let costElement = `<p class="total">Total: $${runningTotal}</p>`;
+        $('.activities').append(costElement);
+      } else {
+        runningTotal = runningTotal - amount;
+        let costElement = `<p class="total">Total: $${runningTotal}</p>`;
         $('.activities').append(costElement);
       }
     }
@@ -130,7 +155,7 @@ $(document).ready(function() {
   paypalInfo.hide();
   bitcoinInfo.hide();
   // make sure you cannot select the first option of the payment method
-  $('#payment option[value=select_method]').attr('disabled', true);
+  $('#payment option[value="select_method"]').attr('disabled', true);
 
   // when an option from the payment dropdown menu is selected
   $('#payment').change(() => {
@@ -139,17 +164,11 @@ $(document).ready(function() {
       const optionValue = $(this).attr("value");
       // hide and show based on selection
       if (optionValue === 'paypal') {
-        paypalInfo.show();
-        bitcoinInfo.hide();
-        creditCardInfo.hide();
+        hideAndShow(paypalInfo, bitcoinInfo, creditCardInfo);
       } else if (optionValue === 'bitcoin') {
-        bitcoinInfo.show();
-        creditCardInfo.hide();
-        paypalInfo.hide();
+        hideAndShow(bitcoinInfo, creditCardInfo, paypalInfo);
       } else if (optionValue === 'credit card') {
-        creditCardInfo.show();
-        bitcoinInfo.hide();
-        paypalInfo.hide();
+        hideAndShow(creditCardInfo, bitcoinInfo, paypalInfo);
       } 
     });
   });
@@ -163,9 +182,7 @@ $(document).ready(function() {
     $('#mail').removeClass('invalid');
 
     if (inputValue.length != 0) {
-      if (isValidEmailAddress(inputValue)) {
-        console.log('valid email');
-      } else {
+      if (!(isValidEmailAddress(inputValue))) {
         $('label[for="mail"]').after(invalidEmailMsg);
         $('#mail').addClass('invalid');
       }
@@ -179,7 +196,7 @@ $(document).ready(function() {
     const actCheckboxes = $('.activities input:checked').length;
     const selectedPayment = $('#payment option:selected').text();
     const cvvRegex = /^[0-9]{3}$/;
-    const ccRegex = /^[0-9]{14,16}$/;
+    const ccRegex = /^[0-9]{13,16}$/;
     const zipRegex = /^[0-9]{5}$/;
     const cvvVal = $('#credit-card #cvv').val();
     const cardVal = $('#credit-card #cc-num').val();
@@ -191,17 +208,13 @@ $(document).ready(function() {
 
     // if email address is invalid
     if (!(isValidEmailAddress(emailAddress))) {
-      event.preventDefault();
-      $('label[for="mail"]').after(invalidEmailMsg);
-      $('#mail').addClass('invalid');
+      invalidFormField('label[for="mail"]', invalidEmailMsg, '#mail');
       $("html, body").animate({ scrollTop: 0 }, "slow");
     }
 
     // if name input is empty
     if (name.length < 1) {
-      event.preventDefault();
-      $('label[for="name"]').after('<span class="error error--name">This field is required</span>');
-      $('#name').addClass('invalid');
+      invalidFormField('label[for="name"]', '<span class="error error--name">This field is required</span>', '#name');
       $("html, body").animate({ scrollTop: 0 }, "slow"); 
     }
     
@@ -215,31 +228,16 @@ $(document).ready(function() {
     if (selectedPayment === 'Credit Card') {
       // if the cvv number is not 3 digits long
       if ((cvvRegex.exec(cvvVal)) === null) {
-        event.preventDefault();
-        $('#cvv').addClass('invalid');
-        $('label[for="cvv"]').after('<span class="error error--cvv">Invalid CVV</span>');
+        invalidFormField('label[for="cvv"]', '<span class="error error--cvv">Invalid CVV</span>', '#cvv');
       }
       // if the credit card number is not between 13 and 16 digits long
       if ((ccRegex.exec(cardVal)) === null) {
-        event.preventDefault();
-        $('label[for="cc-num"]').after('<span class="error error--cc">Please enter a number between 13 and 16 digits long</span>');
-        $('#cc-num').addClass('invalid');
+        invalidFormField('label[for="cc-num"]', '<span class="error error--cc">Please enter a number between 13 and 16 digits long</span>', '#cc-num');
       }
       // if the zip code number is not 5 digits long
       if ((zipRegex.exec(zipVal)) === null) {
-        event.preventDefault();
-        $('#zip').addClass('invalid');
-        $('label[for="zip"]').after('<span class="error error--zip">Invalid Zip Code</span>');
+        invalidFormField('label[for="zip"]', '<span class="error error--zip">Invalid Zip Code</span>', '#zip');
       }
     }
-
   });
-
-
-  
 });
-
-const isValidEmailAddress = (emailAddress) => {
-  const pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
-  return pattern.test(emailAddress);
-}

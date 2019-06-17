@@ -31,14 +31,15 @@ $(document).ready(function() {
   $('#payment option[value="credit card"]').attr("selected", true);
 
   // *** OTHER JOB ROLE FUNCTIONALITY
-  // If the "other" option is selected then show the "other" text input
-  // Else hide it
+  // if the title dropdown menu is changed
   $('#title').change(function() {
+    // loop through all the options
     $(this).find("option:selected").each(function() {
       const optionValue = $(this).attr("value");
-      console.log(optionValue);
+      // If the "other" option is selected then show the "other" text input
       if (optionValue === 'other') {
         otherTextInput.show();
+      // Else hide it
       } else {
         otherTextInput.hide();
       }
@@ -74,7 +75,7 @@ $(document).ready(function() {
             $(colorOptions[index]).show();
           }
         });
-        // the same for 'heart js'
+      // the same for 'heart js'
       } else if (designOptionValue === 'heart js') {
         $(colorOptions).each((index) => {
           let currentOptionText = ($(colorOptions[index]).text());
@@ -83,7 +84,7 @@ $(document).ready(function() {
             $(colorOptions[index]).show();
           }
         });
-        // else reset and show all the options
+      // else reset and show all the options
       } else {
         $(colorOptions).each((index) => {
           $(colorOptions[index]).show();

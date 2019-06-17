@@ -18,11 +18,11 @@ const invalidFormField = (varToAdErrorMsg, errorMsg, varToAddClass) => {
 
 
 $(document).ready(function() {
-  // Add focus to name input on page load
-  $("#name").focus();
   const otherTextInput = $('#other-title');
   const colorDropdown = $('#colors-js-puns');
 
+  // Add focus to name input on page load
+  $("#name").focus();
   // Hide the other text input to begin with
   otherTextInput.hide();
   // Hide the other color dropdown to begin with
@@ -104,47 +104,61 @@ $(document).ready(function() {
     // find the number after the dollar sign of the clicked label
     const clickedLabelAmt = clickedLabel.match(/\$(\d+)/);
     let amount = parseInt(clickedLabelAmt[1]);
-    
 
+    // if there is a total, remove it to begin with
     if ($('.total')) {
       $('.total').remove();
     }
 
-    // and if the element clicked is an input
-    if (target.is('input')) {
-      // check to see if the text of the clicked input matches any of the other labels text
+    // if checkbox is checked
+    if ((target).is(":checked")) {
+      // loop through all the labels
       $(activityLabels).each((index, value) => {
         let currentLabelText = value.textContent;
         let currentValue = $(value).find('input')[0];
+        // if there is a date in the label ie. the first label has no date so variable = null
+        if (clickedLabelDate != null) {
+          // if the date of the clicked check box matches the date in any of the other labels
+          if ((currentLabelText !== clickedLabel) && (currentLabelText.indexOf(clickedLabelDate[1]) != -1)) {  
+            // then disable the checkbox and add grey css property to the label
+            $(currentValue).prop("disabled", true);
+            $(value).css('color', 'grey');
 
-        // if the input is checked
-        if ((target).is(":checked")) {
-          // and there is a date ie. the first one does not have a date so variable is null
-          if (clickedLabelDate != null) {
-            // loop through the labels and check if the date matches any of the other labels
-            if ((currentLabelText !== clickedLabel) && (currentLabelText.indexOf(clickedLabelDate[1]) != -1)) {  
-              $(currentValue).prop("disabled", true);
-              $(value).css('color', 'grey');
-
-            }
-          }
-        // else enable all the checkboxes and reset the color property
-        } else {
-          $(currentValue).prop("disabled", false);
-          $(value).css('color', '');
-        }
+          }  
+        } 
+        
       });
+    } else {
+      // else do the opposite of the above
+      $(activityLabels).each((index, value) => {
+        let currentLabelText = value.textContent;
+        let currentValue = $(value).find('input')[0];
+        if (clickedLabelDate != null) {
+          // loop through the labels and check if the date matches any of the other labels
+          if ((currentLabelText !== clickedLabel) && (currentLabelText.indexOf(clickedLabelDate[1]) != -1)) {  
+            $(currentValue).prop("disabled", false);
+            $(value).css('color', '');
 
-      if ((target).is(":checked")) {
-        runningTotal = runningTotal + amount;
-        let costElement = `<p class="total">Total: $${runningTotal}</p>`;
-        $('.activities').append(costElement);
-      } else {
-        runningTotal = runningTotal - amount;
-        let costElement = `<p class="total">Total: $${runningTotal}</p>`;
-        $('.activities').append(costElement);
-      }
+          }
+        }   
+        
+      });
     }
+
+    // if the checkbox is checked
+    if ((target).is(":checked")) {
+      // then add the amount to the total
+      runningTotal = runningTotal + amount;
+      // append that to the activities div
+      let costElement = `<p class="total">Total: $${runningTotal}</p>`;
+      $('.activities').append(costElement);
+    } else {
+      // else minus the amount and append
+      runningTotal = runningTotal - amount;
+      let costElement = `<p class="total">Total: $${runningTotal}</p>`;
+      $('.activities').append(costElement);
+    }
+    
   });
 
   // *** PAYMENT FUNCTIONALITY
@@ -175,14 +189,18 @@ $(document).ready(function() {
 
   // DYNAMIC FORM VALIDATION
   const invalidEmailMsg = $('<span class="error error--email">Please enter a valid email address</span>');
-  
+  // on keyup
   $('#mail').keyup((event) => {
     let inputValue = $(event.target).val();
+    // remove error message and class of invalid to begin with if they exist
     $('.error--email').remove();
     $('#mail').removeClass('invalid');
 
+    // if there is a value in the email input
     if (inputValue.length != 0) {
+      // and it is not a valid email address
       if (!(isValidEmailAddress(inputValue))) {
+        // add the error message and the class of invalid
         $('label[for="mail"]').after(invalidEmailMsg);
         $('#mail').addClass('invalid');
       }
@@ -202,6 +220,7 @@ $(document).ready(function() {
     const cardVal = $('#credit-card #cc-num').val();
     const zipVal = $('#credit-card #zip').val();
 
+    // remove the error messages and classes of invalid to begin with if they exist
     $('.invalidEmailMsg').remove();
     $('.error').remove();
     $('input').removeClass('invalid');

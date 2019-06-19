@@ -29,6 +29,8 @@ $(document).ready(function() {
   colorDropdown.hide();
   // Select credit card option by default
   $('#payment option[value="credit card"]').attr("selected", true);
+  // Add first option to #color dropdown
+  $("#color").prepend('<option selected>Please select a T-shirt theme</option>');
 
   // *** OTHER JOB ROLE FUNCTIONALITY
   // if the title dropdown menu is changed
@@ -58,7 +60,7 @@ $(document).ready(function() {
       const splitOptions = designOptionText.split(' - ');
       // get just the date from the array of split words
       const chosenDesign = splitOptions[1];
-    
+      
       // hide the color dropdown if the selected design option text content is "Select Theme"
       if (designOptionText === 'Select Theme') {
         colorDropdown.hide();
@@ -70,15 +72,14 @@ $(document).ready(function() {
       // then loop through all the option elements
       $(colorOptions).each((index) => {
         let currentOptionText = ($(colorOptions[index]).text());
-        // first hide all the option elements
+        // first hide all the option elements except the first one
         $(colorOptions[index]).hide();
-        // first deselect all the options
-        $(colorOptions[index]).attr("selected", false);
-
+        // then show the first option
+        $(colorOptions[0]).show();
+        
         // then if any of them match the text from the chosen design then show them
         if (currentOptionText.indexOf(chosenDesign) >= 0) {
           $(colorOptions[index]).show();
-          $(colorOptions[index]).attr("selected", true);
         }
       });
     });

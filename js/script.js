@@ -51,13 +51,14 @@ $(document).ready(function() {
   $('#design').change(function() {
     // find the option that has been selected
     $(this).find("option:selected").each(function() {
-      const designOptionText = $(this).text();
-      // find the value of the option element selected and store it
-      const designOptionValue = $(this).attr('value');
       const colorOptions = $('#color option');
+      // get the text content of the chosen option
+      const designOptionText = $(this).text();
+      // split the text at the hyphen
       const splitOptions = designOptionText.split(' - ');
+      // get just the date from the array of split words
       const chosenDesign = splitOptions[1];
-
+    
       // hide the color dropdown if the selected design option text content is "Select Theme"
       if (designOptionText === 'Select Theme') {
         colorDropdown.hide();
@@ -71,10 +72,13 @@ $(document).ready(function() {
         let currentOptionText = ($(colorOptions[index]).text());
         // first hide all the option elements
         $(colorOptions[index]).hide();
+        // first deselect all the options
+        $(colorOptions[index]).attr("selected", false);
 
         // then if any of them match the text from the chosen design then show them
         if (currentOptionText.indexOf(chosenDesign) >= 0) {
           $(colorOptions[index]).show();
+          $(colorOptions[index]).attr("selected", true);
         }
       });
     });
